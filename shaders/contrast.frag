@@ -1,7 +1,9 @@
+#version 300 es
 
 precision mediump float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
 uniform sampler2D tex;
+out vec4 FragColor;
 
 uniform mediump float time;
 
@@ -18,7 +20,7 @@ float Sigmoid(float x) { return 1.0 / (1.0 + (exp(-(x - 0.5) * 14.0))); }
 
 // Entry.
 void main() {
-  vec4 color = texture2D(tex, v_texcoord);
+  vec4 color = texture(tex, v_texcoord);
 
   color = vec4(Sigmoid(color.r), Sigmoid(color.g), Sigmoid(color.b), 1.0);
 
@@ -26,5 +28,5 @@ void main() {
 
   color.a = 1.0;
 
-  gl_FragColor = color;
+  FragColor = color;
 }

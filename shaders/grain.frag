@@ -1,7 +1,9 @@
+#version 300 es
 
 precision mediump float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
 uniform sampler2D tex;
+out vec4 FragColor;
 
 uniform mediump float time;
 
@@ -14,7 +16,7 @@ float rand(vec2 uv, float t) {
 
 // Entry.
 void main() {
-  vec4 color = texture2D(tex, v_texcoord);
+  vec4 color = texture(tex, v_texcoord);
 
   vec2 ps = vec2(1.0) / display_resolution;
   vec2 uv = v_texcoord * ps;
@@ -23,12 +25,12 @@ void main() {
   float scale = 5.0;
   float amount = 0.3;
 
-  vec2 offset = (rand(v_texcoord, time) - 0.5) * 2.0 * v_texcoord * scale;
-  vec3 noise = texture2D(tex, uv + offset).rgb;
+  vec2 offset_ = (rand(v_texcoord, time) - 0.5) * 2.0 * v_texcoord * scale;
+  vec3 noise = texture(tex, uv + offset_).rgb;
   color.rgb = mix(color.rgb, noise, amount);
   ////////
 
   color.a = 1.0;
 
-  gl_FragColor = color;
+  FragColor = color;
 }

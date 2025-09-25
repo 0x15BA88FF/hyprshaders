@@ -18,10 +18,11 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
+#version 300 es
 precision mediump float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
 uniform sampler2D tex;
+out vec4 FragColor;
 
 // WARNING: DISABLE DAMAGE TRACKING, TO ADD SCANLINES, FLICKER AND
 // ANALOG NOISE OR ELSE - COMMENT OUT TIME VARIABLE AND EVERY OTHER
@@ -58,18 +59,18 @@ void main() {
   // by setting envvar: run "export WLR_NO_HARDWARE_CURSORS=1"
   // before launching Hyprland
   uv = curve(uv);
-  vec4 pixColor = texture2D(tex, uv);
+  vec4 pixColor = texture(tex, uv);
 
   vec3 col = pixColor.rgb;
 
   // Chromatic aberration from CRT ray misalignment
   float analog_noise = fract(sin(time) * 43758.5453123 * uv.y) * 0.0006;
   col.r =
-      texture2D(tex, vec2(analog_noise + uv.x + 0.0008, uv.y + 0.0)).x + 0.05;
-  col.g = texture2D(tex, vec2(analog_noise + uv.x + 0.0008, uv.y + 0.0005)).y +
+      texture(tex, vec2(analog_noise + uv.x + 0.0008, uv.y + 0.0)).x + 0.05;
+  col.g = texture(tex, vec2(analog_noise + uv.x + 0.0008, uv.y + 0.0005)).y +
           0.05;
   col.b =
-      texture2D(tex, vec2(analog_noise + uv.x - 0.0008, uv.y + 0.0)).z + 0.05;
+      texture(tex, vec2(analog_noise + uv.x - 0.0008, uv.y + 0.0)).z + 0.05;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,8 +82,8 @@ void main() {
   // Grain
   float scale = 2.8;
   float amount = 0.15;
-  vec2 offset = (rand(uv, time) - 0.9) * 1.8 * uv * scale;
-  vec3 noise = texture2D(tex, uv + offset).rgb;
+  vec2 offset_ = (rand(uv, time) - 0.9) * 1.8 * uv * scale;
+  vec3 noise = texture(tex, uv + offset_).rgb;
   col.rgb = mix(col.rgb, noise, amount);
   ////////////////////////////////
   col *= 12.8;
@@ -106,7 +107,7 @@ void main() {
        d += 6.283185307180 / blur_directions) {
     for (float i = 1.0 / blur_quality; i <= 1.0; i += 1.0 / blur_quality) {
       vec3 toAdd =
-          texture2D(tex, uv + vec2(cos(d), sin(d)) * blur_radius * i).rgb;
+          texture(tex, uv + vec2(cos(d), sin(d)) * blur_radius * i).rgb;
       toAdd *= blur_brightness * vec3(1.5, 0.85, 0.40);
       bloomColor += toAdd;
     }
@@ -191,7 +192,7 @@ void main() {
 
   pixColor.rb *= vec2(1.04, 0.8); // crt phosphor  tinting
 
-  gl_FragColor = pixColor;
+  FragColor = pixColor;
 
   // gl_FragColor = vec4(col, 1.);
 }

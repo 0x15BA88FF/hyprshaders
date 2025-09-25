@@ -1,8 +1,10 @@
 //modified version of [this shader](https://github.com/wessles/GLSL-CRT/blob/master/shader.frag)
+#version 300 es
 
 precision mediump float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
 uniform sampler2D tex;
+out vec4 FragColor;
 
 const vec3 VIB_RGB_BALANCE = vec3(1.0, 1.0, 1.0);
 const float VIB_VIBRANCE = 0.40;
@@ -30,7 +32,7 @@ void main() {
 	tc.y += 0.5;
 
 	// Get texel, and add in scanline if need be
-	vec4 cta = texture2D(tex, vec2(tc.x, tc.y));
+	vec4 cta = texture(tex, vec2(tc.x, tc.y));
 
 	cta.rgb += sin(tc.y * 1250.0) * 0.02;
 
@@ -60,5 +62,5 @@ void main() {
     cta[2] = mix(luma, color[2], p_col[2]);
 
 	// Apply
-	gl_FragColor = cta;
+	FragColor = cta;
 }

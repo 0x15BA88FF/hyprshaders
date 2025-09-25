@@ -1,7 +1,9 @@
 // -*- mode:c -*-
+#version 300 es
 precision lowp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
 uniform sampler2D tex;
+out vec4 FragColor;
 
 float distanceSquared(vec3 pixColor, vec3 solarizedColor) {
 	vec3 distanceVector = pixColor - solarizedColor;
@@ -27,7 +29,7 @@ void main() {
 	solarized[14] = vec3(0.165,0.631,0.596);
 	solarized[15] = vec3(0.522,0.6,0.);
 
-	vec3 pixColor = vec3(texture2D(tex, v_texcoord));
+	vec3 pixColor = vec3(texture(tex, v_texcoord));
 	int closest = 0;
 	float closestDistanceSquared = distanceSquared(pixColor, solarized[0]);
 	for (int i = 1; i < 15; i++) {
@@ -37,5 +39,5 @@ void main() {
 			closestDistanceSquared = newDistanceSquared;
 		}
 	}
-	gl_FragColor = vec4(solarized[closest], 1.);
+	FragColor = vec4(solarized[closest], 1.);
 }
